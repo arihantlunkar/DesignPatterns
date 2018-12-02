@@ -51,4 +51,6 @@ int main()
     Logger::getInstance()->log("Bug 3");    
     Logger::getInstance()->log("Bug 4");      
     Logger::releaseInstance();
+    
+    return 0;
 }
