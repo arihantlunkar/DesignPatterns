@@ -6,97 +6,97 @@ using namespace std;
 
 class WriteStrategy
 {
-public:
-    virtual void write() const = 0;
+    public:
+    virtual void write() const = 0;   
     virtual ~WriteStrategy() = default;
 };
 
 class TextWriter final : public WriteStrategy
 {
-public:
+    public: 
     TextWriter()
-    {
+    {        
         cout << "TextWriter Created" << endl;
     }
     ~TextWriter()
-    {
+    {        
         cout << "TextWriter Deleted" << endl;
     }
     void write() const
     {
         cout << "TextWriter Used" << endl;
-    }
+    }   
 };
 
 class ExcelSheetWriter final : public WriteStrategy
 {
-public:
+    public: 
     ExcelSheetWriter()
-    {
+    {        
         cout << "ExcelSheetWriter Created" << endl;
     }
     ~ExcelSheetWriter()
-    {
+    {        
         cout << "ExcelSheetWriter Deleted" << endl;
     }
     void write() const
     {
         cout << "ExcelSheetWriter Used" << endl;
-    }
+    }   
 };
 
 class DBWriter final : public WriteStrategy
 {
-public:
+    public:
     DBWriter()
-    {
+    {        
         cout << "DBWriter Created" << endl;
     }
     ~DBWriter()
-    {
+    {        
         cout << "DBWriter Deleted" << endl;
     }
     void write() const
     {
         cout << "DBWriter Used" << endl;
-    }
+    }   
 };
 
-class WriterController
+class WriterController 
 {
-
-public:
-
+    
+  public:
+  
     enum WriteStrategyType
     {
         Text, ExcelSheet, DB
     };
-
+    
     WriterController()
     {
         m_pTextWriter = std::unique_ptr<WriteStrategy>(new TextWriter);
         m_pExcelSheetWriter = std::unique_ptr<WriteStrategy>(new ExcelSheetWriter);
         m_pDBWriter = std::unique_ptr<WriteStrategy>(new DBWriter);
     }
-
+    
     void setWriteStrategy(WriteStrategyType tWriteStrategyType)
     {
         switch(tWriteStrategyType)
         {
-        case WriteStrategyType::Text:
-            m_pWriteStrategy = move(m_pTextWriter);
+            case WriteStrategyType::Text:
+            m_pWriteStrategy = m_pTextWriter.get();
             break;
-        case WriteStrategyType::ExcelSheet:
-            m_pWriteStrategy = move(m_pExcelSheetWriter);
+            case WriteStrategyType::ExcelSheet:
+            m_pWriteStrategy = m_pExcelSheetWriter.get();
             break;
-        case WriteStrategyType::DB:
-            m_pWriteStrategy = move(m_pDBWriter);
+            case WriteStrategyType::DB:
+            m_pWriteStrategy = m_pDBWriter.get();
             break;
-        default:
+            default:
             break;
         }
     }
-
+    
     void executeWriteTask() const
     {
         if(nullptr != m_pWriteStrategy)
@@ -104,26 +104,28 @@ public:
             m_pWriteStrategy->write();
         }
     }
-
-private:
-
+    
+  private:
+  
     unique_ptr<WriteStrategy> m_pTextWriter = nullptr;
     unique_ptr<WriteStrategy> m_pExcelSheetWriter = nullptr;
     unique_ptr<WriteStrategy> m_pDBWriter = nullptr;
-
-    unique_ptr<WriteStrategy> m_pWriteStrategy = nullptr;
+    
+    WriteStrategy* m_pWriteStrategy = nullptr;
 };
 
 int main()
 {
     unique_ptr< WriterController> pWriterController = std::unique_ptr<WriterController>(new WriterController);
-
+    
     pWriterController->setWriteStrategy(WriterController::Text);
     pWriterController->executeWriteTask();
     pWriterController->setWriteStrategy(WriterController::ExcelSheet);
     pWriterController->executeWriteTask();
     pWriterController->setWriteStrategy(WriterController::DB);
     pWriterController->executeWriteTask();
-
+    pWriterController->setWriteStrategy(WriterController::Text);
+    pWriterController->executeWriteTask();
+    
     return 0;
 }
